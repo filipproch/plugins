@@ -329,7 +329,10 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         if (clientId != null) {
           optionsBuilder.requestIdToken(clientId);
           optionsBuilder.requestServerAuthCode(clientId);
+        } else {
+          throw new IllegalStateException("Missing clientId!");
         }
+
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));
         }
