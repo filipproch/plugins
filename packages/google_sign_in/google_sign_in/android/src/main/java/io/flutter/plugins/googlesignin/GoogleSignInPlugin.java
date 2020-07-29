@@ -135,7 +135,8 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
         String signInOption = call.argument("signInOption");
         List<String> requestedScopes = call.argument("scopes");
         String hostedDomain = call.argument("hostedDomain");
-        delegate.init(result, signInOption, requestedScopes, hostedDomain);
+        String clientId = call.argument("clientId");
+        delegate.init(result, signInOption, requestedScopes, hostedDomain, clientId);
         break;
 
       case METHOD_SIGN_IN_SILENTLY:
@@ -187,7 +188,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   public interface IDelegate {
     /** Initializes this delegate so that it is ready to perform other operations. */
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain);
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain, String clientId);
 
     /**
      * Returns the account information for the user who is signed in to this app. If no user is
@@ -308,7 +309,7 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
      */
     @Override
     public void init(
-        Result result, String signInOption, List<String> requestedScopes, String hostedDomain) {
+        Result result, String signInOption, List<String> requestedScopes, String hostedDomain, String clientId) {
       try {
         GoogleSignInOptions.Builder optionsBuilder;
 
@@ -325,17 +326,9 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
             throw new IllegalStateException("Unknown signInOption");
         }
 
-        // Only requests a clientId if google-services.json was present and parsed
-        // by the google-services Gradle script.
-        // TODO(jackson): Perhaps we should provide a mechanism to override this
-        // behavior.
-        int clientIdIdentifier =
-            context
-                .getResources()
-                .getIdentifier("default_web_client_id", "string", context.getPackageName());
-        if (clientIdIdentifier != 0) {
-          optionsBuilder.requestIdToken(context.getString(clientIdIdentifier));
-          optionsBuilder.requestServerAuthCode(context.getString(clientIdIdentifier));
+        if (clientId != null) {
+          optionsBuilder.requestIdToken(clientId);
+          optionsBuilder.requestServerAuthCode(clientId);
         }
         for (String scope : requestedScopes) {
           optionsBuilder.requestScopes(new Scope(scope));

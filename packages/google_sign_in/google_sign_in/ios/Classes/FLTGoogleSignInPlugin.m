@@ -73,20 +73,12 @@ static FlutterError *getFlutterError(NSError *error) {
                                  message:@"Games sign in is not supported on iOS"
                                  details:nil]);
     } else {
-      NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
-                                                       ofType:@"plist"];
-      if (path) {
-        NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        [GIDSignIn sharedInstance].clientID = plist[kClientIdKey];
-        [GIDSignIn sharedInstance].serverClientID = plist[kServerClientIdKey];
-        [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
-        [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
-        result(nil);
-      } else {
-        result([FlutterError errorWithCode:@"missing-config"
-                                   message:@"GoogleService-Info.plist file not found"
-                                   details:nil]);
-      }
+      [GIDSignIn sharedInstance].clientID = call.arguments[@"clientId"];
+      [GIDSignIn sharedInstance].serverClientID = nil;
+      [GIDSignIn sharedInstance].scopes = call.arguments[@"scopes"];
+      [GIDSignIn sharedInstance].hostedDomain = call.arguments[@"hostedDomain"];
+
+      result(nil);
     }
   } else if ([call.method isEqualToString:@"signInSilently"]) {
     if ([self setAccountRequest:result]) {
