@@ -20,7 +20,7 @@ dependencies:
     git:
       url: https://github.com/filipproch/plugins.git
       ref: master
-      path: packages/google_sign_in/google_sign_in
+      path: packages/google_sign_in/google_sign_in_platform_interface
   flutter:
     sdk: flutter
   meta: ^1.0.4
